@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Nhận diện Vật liệu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-eye"></i> Hệ thống Nhận diện Vật liệu</h1>
+            <p>Nhận diện các loại vật liệu: Giấy, Kim loại, Nhựa, Thủy tinh, Vải</p>
+        </header>
+
+        <div class="main-content">
+            <div class="controls">
+                <button id="start-camera" class="btn">
+                    <i class="fas fa-video"></i> Bật Camera
+                </button>
+                <button id="stop-camera" class="btn" disabled>
+                    <i class="fas fa-video-slash"></i> Tắt Camera
+                </button>
+                <div class="upload-container">
+                    <label for="upload-file" class="btn">
+                        <i class="fas fa-upload"></i> Tải ảnh lên
+                    </label>
+                    <input type="file" id="upload-file" accept="image/*" hidden>
+                </div>
+            </div>
+
+            <div class="detection-area">
+                <div class="video-container">
+                    <div id="loading-indicator" class="hidden">
+                    </div>
+                    <img id="placeholder" src="{{ url_for('static', filename='img/placeholder.jpg') }}"
+                        alt="Vui lòng tải lên ảnh hoặc bật camera">
+                    <img id="uploaded-image" class="hidden" alt="Kết quả phân tích">
+                    <img id="video-feed" class="hidden" src="" alt="Camera Feed">
+                </div>
+
+                <div class="result-container">
+                    <h2>Kết quả nhận diện</h2>
+                    <div class="result-box">
+                        <ul id="results-list">
+                            <li class="no-results">Chưa có dữ liệu nhận diện</li>
+                        </ul>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <i class="fas fa-object-group"></i>
+                            <span>Số đối tượng: </span>
+                            <span id="object-count">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Thời gian xử lý: </span>
+                            <span id="processing-time">0 ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <h3>Chú thích màu</h3>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="color-box" style="background-color: rgb(255, 200, 0);"></div>
+                        <span>Giấy</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box" style="background-color: rgb(192, 192, 192);"></div>
+                        <span>Kim loại</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box" style="background-color: rgb(0, 255, 255);"></div>
+                        <span>Nhựa</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box" style="background-color: rgb(0, 128, 255);"></div>
+                        <span>Thủy tinh</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box" style="background-color: rgb(128, 0, 255);"></div>
+                        <span>Vải</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Hệ thống Nhận diện vật liệu tái chế</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
