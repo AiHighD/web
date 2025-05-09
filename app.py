@@ -43,8 +43,8 @@ CONFIDENCE_THRESHOLDS = {
     'Giay': 0.35,
     'KimLoai': 0.35,
     'Nhua': 0.45,
-    'ThuyTinh': 0.55,  # Tăng ngưỡng cho thủy tinh để giảm false positive
-    'Vai': 0.25
+    'ThuyTinh': 0.45,  # Tăng ngưỡng cho thủy tinh để giảm false positive
+    'Vai': 0.3
 }
 
 def load_model():
@@ -160,11 +160,6 @@ def detect_objects(img):
                 "position": {"x": int(x1), "y": int(y1), "width": int(w), "height": int(h)}
             })
     
-    # Thêm FPS
-    fps = 0  # FPS chỉ có ý nghĩa trong video stream
-    cv2.putText(img, f"FPS: {fps:.2f}", (20, img_height - 20), 
-               cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-    
     return img, detected_objects
 
 def generate_frames():
@@ -265,4 +260,4 @@ def settings():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)

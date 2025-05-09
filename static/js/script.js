@@ -6,14 +6,43 @@ document.addEventListener('DOMContentLoaded', function() {
     const placeholder = document.getElementById('placeholder');
     const uploadedImage = document.getElementById('uploaded-image');
     const videoFeed = document.getElementById('video-feed');
-    const loadingIndicator = document.getElementById('loading-indicator');
+    const loadingIndicator = document.getElementById("loading-indicator");
     const resultsList = document.getElementById('results-list');
     const objectCount = document.getElementById('object-count');
     const processingTime = document.getElementById('processing-time');
+    const languageToggle = document.getElementById('language-toggle');
+    const langText = document.getElementById('lang-text');
 
     // Các biến trạng thái
     let cameraActive = false;
     let detectionInterval = null;
+    let currentLanguage = localStorage.getItem('language') || 'vi'; // Mặc định là tiếng Việt
+
+    // Các từ điển ngôn ngữ
+    const translations = {
+        // Bản dịch cho thông báo lỗi và thông báo khác
+        en: {
+            'Không thể kết nối với camera': 'Unable to connect to camera',
+            'Lỗi khi xử lý ảnh': 'Error processing image',
+            'Vui lòng chọn một file ảnh': 'Please select an image file',
+            'Chưa có dữ liệu nhận diện': 'No detection data yet',
+            // Bản dịch cho tên lớp
+            'Giay': 'Paper',
+            'KimLoai': 'Metal',
+            'Nhua': 'Plastic',
+            'ThuyTinh': 'Glass',
+            'Vai': 'Fabric',
+            'None': 'None'
+        },
+        vi: {
+            'Paper': 'Giấy',
+            'Metal': 'Kim loại',
+            'Plastic': 'Nhựa',
+            'Glass': 'Thủy tinh',
+            'Fabric': 'Vải',
+            'None': 'Không có'
+        }
+    };
 
     // Khởi tạo placeholder
     fetch('/static/img/placeholder.jpg')
@@ -21,6 +50,57 @@ document.addEventListener('DOMContentLoaded', function() {
             console.warn("Không tìm thấy ảnh placeholder, sử dụng màu nền");
             placeholder.style.backgroundColor = "#333";
         });
+
+    // Áp dụng ngôn ngữ đã lưu
+    applyLanguage(currentLanguage);
+
+    // Xử lý sự kiện chuyển đổi ngôn ngữ
+    languageToggle.addEventListener('click', function() {
+        currentLanguage = currentLanguage === 'vi' ? 'en' : 'vi';
+        localStorage.setItem('language', currentLanguage);
+        applyLanguage(currentLanguage);
+    });
+
+    // Hàm áp dụng ngôn ngữ
+    function applyLanguage(lang) {
+        // Cập nhật nút chuyển đổi ngôn ngữ
+        langText.textContent = lang === 'vi' ? 'EN' : 'VI';
+        
+        // Cập nhật các phần tử có class 'lang'
+        document.querySelectorAll('.lang').forEach(element => {
+            if (element.dataset[lang]) {
+                element.textContent = element.dataset[lang];
+            }
+        });
+
+        // Cập nhật tiêu đề trang
+        document.title = lang === 'vi' ? 'Hệ Thống Phân Loại Vật Liệu Tái Chế' : 'Recyclable Material Sorting System';
+        
+        // Cập nhật text trong placeholder
+        placeholder.alt = lang === 'vi' ? 'Vui lòng tải lên ảnh hoặc bật camera' : 'Please upload an image or start camera';
+        
+        // Cập nhật text trong uploaded-image
+        uploadedImage.alt = lang === 'vi' ? 'Kết quả phân tích' : 'Analysis Result';
+        
+        // Cập nhật text trong video-feed
+        videoFeed.alt = lang === 'vi' ? 'Camera Feed' : 'Camera Feed';
+        
+        // Cập nhật kết quả hiện tại nếu có
+        if (!cameraActive && resultsList.querySelector('.no-results')) {
+            resultsList.querySelector('.no-results').textContent = 
+                lang === 'vi' ? 'Chưa có dữ liệu nhận diện' : 'No detection data yet';
+        }
+    }
+
+    // Hàm dịch văn bản
+    function translate(text, lang) {
+        // Nếu có bản dịch, trả về bản dịch
+        if (translations[lang] && translations[lang][text]) {
+            return translations[lang][text];
+        }
+        // Nếu không có bản dịch, trả về văn bản gốc
+        return text;
+    }
 
     // Xử lý bật camera
     startCameraBtn.addEventListener('click', function() {
@@ -45,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         videoFeed.onerror = function() {
-            showError("Không thể kết nối với camera");
+            showError(translate('Không thể kết nối với camera', currentLanguage));
             stopCamera();
         };
     });
@@ -93,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const file = e.target.files[0];
         if (!file.type.match('image.*')) {
-            alert('Vui lòng chọn một file ảnh');
+            alert(translate('Vui lòng chọn một file ảnh', currentLanguage));
             return;
         }
         
@@ -132,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Lỗi:', error);
-            showError("Lỗi khi xử lý ảnh");
+            showError(translate('Lỗi khi xử lý ảnh', currentLanguage));
         })
         .finally(() => {
             showLoading(false);
@@ -205,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (objects.length === 0) {
             const noResultsItem = document.createElement('li');
             noResultsItem.className = 'no-results';
-            noResultsItem.textContent = 'Chưa có dữ liệu nhận diện';
+            noResultsItem.textContent = translate('Chưa có dữ liệu nhận diện', currentLanguage);
             resultsList.appendChild(noResultsItem);
         } else {
             // Hiển thị các đối tượng đã phát hiện
@@ -213,9 +293,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const item = document.createElement('li');
                 item.className = index === 0 ? 'highlight' : '';
                 
+                // Dịch nhãn đối tượng theo ngôn ngữ hiện tại
+                const translatedLabel = currentLanguage === 'en' ? 
+                                        translate(obj.label, currentLanguage) : 
+                                        obj.label;
+                
                 const labelSpan = document.createElement('span');
                 labelSpan.className = 'object-label';
-                labelSpan.textContent = obj.label;
+                labelSpan.textContent = translatedLabel;
                 
                 const confidenceBar = document.createElement('div');
                 confidenceBar.className = 'confidence-bar';
@@ -262,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsList.innerHTML = '';
         const noResultsItem = document.createElement('li');
         noResultsItem.className = 'no-results';
-        noResultsItem.textContent = 'Chưa có dữ liệu nhận diện';
+        noResultsItem.textContent = translate('Chưa có dữ liệu nhận diện', currentLanguage);
         resultsList.appendChild(noResultsItem);
         
         objectCount.textContent = '0';

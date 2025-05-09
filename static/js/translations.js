@@ -83,7 +83,6 @@ function toggleLanguage() {
     setLanguage(newLang);
 }
 
-// Khởi tạo khi tài liệu đã tải xong
 document.addEventListener('DOMContentLoaded', function() {
     // Thiết lập ngôn ngữ từ localStorage (nếu có)
     const savedLang = localStorage.getItem('language');
@@ -94,9 +93,25 @@ document.addEventListener('DOMContentLoaded', function() {
         setLanguage('vi');
     }
     
-    // Thêm sự kiện click cho nút chuyển đổi ngôn ngữ
+    // Cập nhật nội dung nút chuyển đổi ngôn ngữ
     const languageToggle = document.getElementById('language-toggle');
     if (languageToggle) {
-        languageToggle.addEventListener('click', toggleLanguage);
+        // Thêm sự kiện click cho nút chuyển đổi ngôn ngữ
+        languageToggle.addEventListener('click', function() {
+            toggleLanguage();
+            // Cập nhật nội dung nút sau khi chuyển đổi ngôn ngữ
+            const currentLang = getCurrentLanguage();
+            const switchLangText = translations[currentLang]['switch_lang'];
+            const switchLangElem = languageToggle.querySelector('[data-translate="switch_lang"]');
+            if (switchLangElem) {
+                switchLangElem.textContent = switchLangText;
+            }
+        });
+    }
+    
+    // Cập nhật tiêu đề trang theo ngôn ngữ
+    const currentLang = getCurrentLanguage();
+    if (translations[currentLang] && translations[currentLang]['title']) {
+        document.title = translations[currentLang]['title'];
     }
 });

@@ -112,7 +112,6 @@ header p {
     position: relative;
     height: 400px;
     border-radius: 8px;
-    overflow: hidden;
     background-color: #ffffff;
     box-shadow: var(--shadow);
 }
@@ -120,7 +119,7 @@ header p {
 .video-container img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 #loading-indicator {
@@ -129,7 +128,7 @@ header p {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(59, 59, 59, 0);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -290,4 +289,25 @@ footer {
 .highlight {
     background-color: rgba(74, 111, 255, 0.1);
     border-left: 3px solid var(--primary-color);
+}
+
+.language-button {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    z-index: 10;
+}
+
+.header-top {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.header-top h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
 }
